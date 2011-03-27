@@ -1,7 +1,13 @@
-     var DATAGRID = (function (ds, edit, url) {
-            var ds = (ds != null) ? ds : [];
-            var edit = (edit != null) ? edit : {};
-            var url = (edit != null) ? url : "";
+
+
+        var DATAGRID = (function (ds, edit, url, cssclass, focuscolor, blurcolor, type) {
+            var ds = (ds != null || ds != undefined) ? ds : [];
+            var edit = (edit != null || edit != undefined) ? edit : {};
+            var url = (url != null || url != undefined) ? url : "";
+            var cssclass = (cssclass != null || cssclass != undefined) ? cssclass : "datagrid";
+            var focuscolor = (focuscolor != null || focuscolor != undefined) ? focuscolor : "#E4EAFD";
+            var blurcolor = (blurcolor != null || blurcolor != undefined) ? blurcolor : "#C7FFB9";
+            var type = (type != null || type != undefined) ? type : "GET";
 
             var props = [];
 
@@ -17,7 +23,7 @@
                 return $.ajax({
                     url: url,
                     data: edit,
-                    type: "GET" });
+                    type: type });
             }
 
 
@@ -26,8 +32,16 @@
                 var dslen = ds.length;
                 var propslen = props.length;
                 var table = document.createElement("table");
+                table.className = cssclass;
 
                 var thead = document.createElement("thead");
+                var trthead = document.createElement("tr");
+                for(var p=0;p<propslen;p++){
+                    var th = document.createElement("th");
+                    th.innerHTML = props[p];
+                    trthead.appendChild(th);
+                }
+                thead.appendChild(trthead);
                 table.appendChild(thead);
 
                 var tbody = document.createElement("tbody");
@@ -42,13 +56,24 @@
                         var text = document.createElement("input");
                         text.type = "text";
                         text.onfocus = function () {
-                            var value = this.value;
-                            var id = this.id;
+                            var self = this;
+                            self.style.backgroundColor = focuscolor;
+
+                            var value = self.value;
+                            var id = self.id;
+
+
                         }
                         text.onblur = function () {
-                            var falt = this.className;
-                            var value = this.value;
-                            var id = this.parentNode.parentNode.id;
+                            var self = this;
+                            self.style.backgroundColor = blurcolor;
+                            setTimeout(function(){
+                                self.style.backgroundColor = "#fff";
+                            }, 300);
+
+                            var falt = self.className;
+                            var value = self.value;
+                            var id = self.parentNode.parentNode.id;
                             edit["falt"] = falt;
                             edit["value"] = value;
                             edit["id"] = id;
